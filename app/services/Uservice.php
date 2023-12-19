@@ -52,9 +52,89 @@
 
         }
 
+        public function fetchAllUser()
+        {
+            $sql = "SELECT * FROM users JOIN adress on users.addressID = adress.addressID";
+            $this->db->query($sql);
+            try {
+                $users = $this->db->manyOjects();
+                return $users;
+            } catch (PDOException $e) {
+                print_r($e);
+            }
+        }
+
+        public function deleteUser($userID){
+
+            $sql = "DELETE FROM users WHERE userID = :userID";
+            $this->db->query($sql);
+            try {
+                $this->db->bind(":userID" , $userID);
+                $this->db->execute();
+            } catch (PDOException $e) {
+                print_r($e);
+            }
+
+
+        }
+        public function fetchUserById($userID){
+            $sql = "SELECT * FROM users JOIN adress ON users.addressID = adress.addressID 
+                    JOIN roleofuser ON users.userID = roleOfuser.userID
+                    JOIN agency ON users.agencyID = agency.agencyID
+                    WHERE users.userID = :userID";
+            $this->db->query($sql);
+            $this->db->bind(":userID" , $userID);
+            try {
+            $user = $this->db->oneObject();
+            return $user;    
+            } catch (PDOException $e) {
+                print_r($e);
+            }
+        }
+
+
+        public function updateUser(User $user) {
+            try {
+            // Start a transaction
+
+            // Update address table
+            $sql1 = "UPDATE adress
+                    SET ville = :ville, quartier = :quartier, rue = :rue, codePostal = :codePostal, email = :email, phone = :phone
+                    WHERE addressID = :addressID";
+
+            $this->db->query($sql1);
+            $this->db->bind(":ville", $user->getAddress()->getVille());
+            $this->db->bind(":quartier", $user->getAddress()->getQuartier());
+            $this->db->bind(":rue", $user->getAddress()->getRue());
+            $this->db->bind(":codePostal", $user->getAddress()->getCodePostal());
+            $this->db->bind(":email", $user->getAddress()->getEmail());
+            $this->db->bind(":phone", $user->getAddress()->getPhone());
+            $this->db->bind(":addressID", $user->getAddress()->getAdressID());
+            $this->db->execute();
+
+            // Update users table
+            $sql2 = "UPDATE users
+                    SET username = :username, userPass = :userPass
+                    WHERE addressID = :addressID";
+
+            $this->db->query($sql2);
+            $this->db->bind(":username", $user->getUsername());
+            $this->db->bind(":userPass", $user->getUserpass());
+            $this->db->bind(":addressID", $user->getAddress()->getAdressID());
+            $this->db->execute();
+                print_r("Hello");
+                die();
+            // Commit the transaction
+            } catch (PDOException $e) {
+                print_r($e);
+            }
 
 
 
+
+
+
+        }
 
 
 

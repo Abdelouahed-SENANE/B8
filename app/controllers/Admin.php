@@ -331,10 +331,8 @@ class Admin extends Controller{
     public function user() {
 
 
-
-
-
         $data = [
+            'users' => $this->userService->fetchAllUser(),
             'page' => 'user'
         ];
         $this->view('admin/user' , $data);
@@ -399,5 +397,70 @@ class Admin extends Controller{
 
         }
         ob_end_flush();
+    }
+    // ==================== Delete User  =================
+    public function deleteUser() {
+        $userID = $_GET['id'];
+
+        $this->userService->deleteUser($userID);
+        header('Location:' . URLROOT . '/admin/user');
+    }
+
+    // ================== UPDATE user =======================
+    public function updateUser(){
+        $user = $this->userService->fetchUserById($_GET['id']);
+        $data = [
+            'user' => $user,
+            'page' => 'user'
+        ];
+        $this->view('admin/updateUser',$data);
+
+        if (isset($_POST['update'])) {
+            $updates = [
+                'username' => $_POST['username'],
+                'password' => $_POST['password'],
+                'ville' => $_POST['ville'],
+                'quartier' => $_POST['quartier'],
+                'rue' => $_POST['rue'],
+                'email' => $_POST['email'],
+                'code' => $_POST['code'],
+                'phone' => $_POST['phone']
+            ];
+            
+            $updateAdress = new Adress();
+            $updateAdress->setAdressID($user->addressID);
+            $updateAdress->setVille($updates['ville']);
+            $updateAdress->setQuartier($updates['quartier']);
+            $updateAdress->setrue($updates['rue']);
+            $updateAdress->setEmail($updates['email']);
+            $updateAdress->setPhone($updates['phone']);
+            $updateAdress->setcodePostal($updates['code']);
+
+            $updateUser = new User();
+            $updateUser->setAddress($updateAdress);
+            $updateUser->setUsername($updates['username']);
+            $updateUser->setUserpass($updates['password']);
+
+            
+            $this->userService->updateUser($updateUser);
+            // header('Location:' . URLROOT . '/admin/user');
+            exit();
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
     }
 }
