@@ -1,0 +1,22 @@
+#sidebar {
+    position: sticky;
+    left: 0;
+    top: 0;
+    width: 85px;
+    padding: 20px 10px;
+    overflow: hidden;
+    transition: all 0.5s ease;
+
+}
+
+
+#sidebar.open  {
+    width: 220px;
+
+}
+#sidebar.close #title  {
+    opacity: 0;
+    transition: all 0.8s ease;
+    
+}
+
